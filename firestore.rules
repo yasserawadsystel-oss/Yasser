@@ -1,0 +1,120 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isManager() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'yasser.awad.systel@gmail.com' ||
+        request.auth.token.email.matches('.*@systel\\.com\\.eg')
+      );
+    }
+
+    function isValidClearanceSheet(data) {
+      return data.keys().hasAll(['sheetNumber', 'siteName', 'department', 'advanceAmount', 'status', 'userId', 'createdAt']) &&
+        data.sheetNumber is string && data.sheetNumber.size() > 0 &&
+        data.siteName is string && data.siteName.size() > 0 &&
+        data.department is string &&
+        data.advanceAmount is number && data.advanceAmount >= 0 &&
+        data.status in ['PENDING', 'APPROVED', 'REJECTED'] &&
+        data.userId is string &&
+        data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidExpenseItem(data) {
+      return data.keys().hasAll(['category', 'description', 'amount', 'userId', 'createdAt']) &&
+        data.category is string &&
+        data.description is string &&
+        data.amount is number && data.amount > 0 &&
+        data.userId is string &&
+        data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidUserAccount(data) {
+      return data.keys().hasAll(['fullName', 'email', 'phone', 'department', 'status', 'userId', 'createdAt']) &&
+        data.fullName is string && data.fullName.size() >= 3 &&
+        data.email is string &&
+        data.phone is string &&
+        data.status in ['PENDING_ACTIVATION', 'ACTIVE', 'REJECTED'] &&
+        data.userId is string &&
+        data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidTeam(data) {
+      return data.keys().hasAll(['teamCode', 'teamName', 'leaderName', 'department', 'userId', 'createdAt']) &&
+        data.teamCode is string &&
+        data.teamName is string &&
+        data.leaderName is string &&
+        data.userId is string &&
+        data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    // Clearance Sheets
+    match /clearance_sheets/{sheetId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isManager()
+      );
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidClearanceSheet(request.resource.data);
+      allow update: if isAuthenticated() && (
+        (resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid && isValidClearanceSheet(request.resource.data)) ||
+        isManager()
+      );
+      allow delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isManager()
+      );
+
+      // Subcollection: Expense Items
+      match /expense_items/{itemId} {
+        allow read: if isAuthenticated() && (
+          resource.data.userId == request.auth.uid || isManager()
+        );
+        allow create: if isAuthenticated() &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidExpenseItem(request.resource.data);
+        allow update: if isAuthenticated() && (
+          (resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid && isValidExpenseItem(request.resource.data)) ||
+          isManager()
+        );
+        allow delete: if isAuthenticated() && (
+          resource.data.userId == request.auth.uid || isManager()
+        );
+      }
+    }
+
+    // User Accounts
+    match /user_accounts/{accountId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isManager()
+      );
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidUserAccount(request.resource.data);
+      allow update: if isAuthenticated() && (
+        (resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid && isValidUserAccount(request.resource.data)) ||
+        isManager()
+      );
+      allow delete: if isManager();
+    }
+
+    // Teams
+    match /teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidTeam(request.resource.data);
+      allow update: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isManager()
+      );
+      allow delete: if isManager();
+    }
+  }
+}

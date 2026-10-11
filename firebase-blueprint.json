@@ -1,0 +1,256 @@
+{
+  "entities": {
+    "ClearanceSheet": {
+      "title": "ClearanceSheet",
+      "description": "Telecom site custody and expense clearance sheet",
+      "type": "object",
+      "properties": {
+        "sheetNumber": {
+          "type": "string",
+          "description": "Unique clearance sheet reference number"
+        },
+        "siteName": {
+          "type": "string",
+          "description": "Telecom tower or site name"
+        },
+        "department": {
+          "type": "string",
+          "description": "Telecom department or operator project"
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographical region or governorate"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "Work start date"
+        },
+        "startTime": {
+          "type": "string",
+          "description": "Work start time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "Work end date"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "Work end time"
+        },
+        "activityType": {
+          "type": "string",
+          "description": "Telecom activity type like Installation, Swap, Survey"
+        },
+        "teamLeader": {
+          "type": "string",
+          "description": "Name of supervising team leader"
+        },
+        "teamMembers": {
+          "type": "string",
+          "description": "Names of team engineers and technicians"
+        },
+        "teamCode": {
+          "type": "string",
+          "description": "Assigned team code"
+        },
+        "teamName": {
+          "type": "string",
+          "description": "Assigned team display name"
+        },
+        "advanceAmount": {
+          "type": "number",
+          "description": "Advance custody amount in EGP"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "APPROVED", "REJECTED"],
+          "description": "Clearance approval status"
+        },
+        "approvedBy": {
+          "type": "string",
+          "description": "Manager or Team Leader who approved/reviewed"
+        },
+        "approvalDate": {
+          "type": "string",
+          "description": "Date of approval"
+        },
+        "approvalNotes": {
+          "type": "string",
+          "description": "Manager approval notes or rejection reason"
+        },
+        "signatureData": {
+          "type": "string",
+          "description": "Vector or base64 digital signature of approving leader"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of creator"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when sheet was created"
+        }
+      },
+      "required": ["sheetNumber", "siteName", "department", "advanceAmount", "status", "userId", "createdAt"]
+    },
+    "ExpenseItem": {
+      "title": "ExpenseItem",
+      "description": "Individual expense receipt item within a clearance sheet",
+      "type": "object",
+      "properties": {
+        "sheetId": {
+          "type": "string",
+          "description": "Parent clearance sheet document ID"
+        },
+        "category": {
+          "type": "string",
+          "description": "Expense category"
+        },
+        "description": {
+          "type": "string",
+          "description": "Expense item description"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount spent in EGP"
+        },
+        "invoiceNumber": {
+          "type": "string",
+          "description": "Receipt or invoice reference"
+        },
+        "date": {
+          "type": "string",
+          "description": "Date expense was incurred"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Auth UID of creator"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of expense item"
+        }
+      },
+      "required": ["category", "description", "amount", "userId", "createdAt"]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Registered telecom team engineer or leader account",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "Full employee name"
+        },
+        "email": {
+          "type": "string",
+          "description": "Employee email address"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Employee mobile phone number"
+        },
+        "department": {
+          "type": "string",
+          "description": "Assigned telecom project or department"
+        },
+        "teamName": {
+          "type": "string",
+          "description": "Assigned team or station name"
+        },
+        "isTeamLeader": {
+          "type": "boolean",
+          "description": "Whether user requested team leader role"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING_ACTIVATION", "ACTIVE", "REJECTED"],
+          "description": "Account activation status"
+        },
+        "activationCode": {
+          "type": "string",
+          "description": "Unique activation code for verification"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account registration timestamp"
+        }
+      },
+      "required": ["fullName", "email", "phone", "department", "status", "userId", "createdAt"]
+    },
+    "Team": {
+      "title": "Team",
+      "description": "Registered field maintenance or operations team",
+      "type": "object",
+      "properties": {
+        "teamCode": {
+          "type": "string",
+          "description": "Unique team identifier code"
+        },
+        "teamName": {
+          "type": "string",
+          "description": "Team display title"
+        },
+        "leaderName": {
+          "type": "string",
+          "description": "Team leader full name"
+        },
+        "department": {
+          "type": "string",
+          "description": "Operator or project department"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact phone"
+        },
+        "email": {
+          "type": "string",
+          "description": "Team contact email"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Creator user ID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["teamCode", "teamName", "leaderName", "department", "userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/clearance_sheets/{sheetId}": {
+      "schema": {
+        "$ref": "ClearanceSheet"
+      },
+      "description": "Collection of telecom site clearance sheets"
+    },
+    "/clearance_sheets/{sheetId}/expense_items/{itemId}": {
+      "schema": {
+        "$ref": "ExpenseItem"
+      },
+      "description": "Subcollection of expenses for a clearance sheet"
+    },
+    "/user_accounts/{accountId}": {
+      "schema": {
+        "$ref": "UserAccount"
+      },
+      "description": "Collection of employee and team leader accounts"
+    },
+    "/teams/{teamId}": {
+      "schema": {
+        "$ref": "Team"
+      },
+      "description": "Collection of telecom field teams"
+    }
+  }
+}

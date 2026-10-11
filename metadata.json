@@ -1,0 +1,8 @@
+{
+  "name": "Remix تصفية سيستل",
+  "description": "تطبيق تصفية عهدة ومصاريف مواقع لشركة سيستل للاتصالات مع حساب التصفية في الإجمالي واعتماد التيم ليدر للمهندسين",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
